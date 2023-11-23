@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">Pet Buddy</string>
+    <string name="app_name">Fuel Balance App</string>
 
     <string name="permission_rational_dialog_title">Activity Recognition Permission Needed</string>
-    <string name="permission_rational_dialog_message">To get information about your activity, you need to give Activity Recognition permission to Pet Buddy.</string>
+    <string name="permission_rational_dialog_message">To get information about your activity, you need to give Activity Recognition permission to Fuel Balance App.</string>
     <string name="permission_rational_dialog_positive_button_text">Request a permission</string>
     <string name="permission_rational_dialog_negative_button_text">No thanks</string>
 
@@ -30,8 +30,10 @@
     <string name="still">Still</string>
     <string name="walking">Walking</string>
     <string name="running">Running</string>
+    <string name="in_vehicle">In vehicle</string>
 
     <string name="still_text">You are currently standing still!</string>
     <string name="walking_text">You are walking!</string>
     <string name="running_text">You are running, keep doing it!</string>
+    <string name="in_vehicle_text">You are in the vehicle!</string>
 </resources>

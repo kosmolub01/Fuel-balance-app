@@ -15,7 +15,9 @@ enum class SupportedActivity(
     NOT_STARTED(R.drawable.time_to_start, R.string.time_to_start),
     STILL(R.drawable.dog_standing, R.string.still_text),
     WALKING(R.drawable.dog_walking, R.string.walking_text),
-    RUNNING(R.drawable.dog_running, R.string.running_text);
+    RUNNING(R.drawable.dog_running, R.string.running_text),
+    IN_VEHICLE(R.drawable.dog_standing, R.string.in_vehicle_text);
+
 
     companion object {
 
@@ -23,6 +25,7 @@ enum class SupportedActivity(
             DetectedActivity.STILL -> STILL
             DetectedActivity.WALKING -> WALKING
             DetectedActivity.RUNNING -> RUNNING
+            DetectedActivity.IN_VEHICLE -> IN_VEHICLE
             else -> throw IllegalArgumentException("activity $type not supported")
         }
     }
