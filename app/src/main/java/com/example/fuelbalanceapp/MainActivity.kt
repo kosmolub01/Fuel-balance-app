@@ -1,139 +1,116 @@
 package com.example.fuelbalanceapp
 
 import android.Manifest
-import android.app.PendingIntent
 import android.content.Intent
-import android.content.SharedPreferences
-import android.os.Build
+import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.Bundle
-import android.widget.Switch
+import android.util.Log
+import android.view.View
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.preference.PreferenceManager
-import com.example.fuelbalanceapp.receiver.ActivityTransitionReceiver
-import com.example.fuelbalanceapp.util.ActivityTransitionsUtil
-import com.example.fuelbalanceapp.util.Constants
-import com.example.fuelbalanceapp.util.Constants.ACTIVITY_TRANSITION_STORAGE
-import com.google.android.gms.location.ActivityRecognition
-import com.google.android.gms.location.ActivityRecognitionClient
-import pub.devrel.easypermissions.AppSettingsDialog
-import pub.devrel.easypermissions.EasyPermissions
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.example.fuelbalanceapp.detectedactivity.DetectedActivityService
+import com.example.fuelbalanceapp.transitions.TRANSITIONS_RECEIVER_ACTION
+import com.example.fuelbalanceapp.transitions.TransitionsReceiver
+import com.example.fuelbalanceapp.transitions.removeActivityTransitionUpdates
+import com.example.fuelbalanceapp.transitions.requestActivityTransitionUpdates
+import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
+class MainActivity : AppCompatActivity() {
 
-    lateinit var client: ActivityRecognitionClient
-    lateinit var storage: SharedPreferences
+    private var isTrackingStarted = false
+        set(value) {
+            resetBtn.visibility = if(value) View.VISIBLE else View.GONE
+            field = value
+        }
+
+    private val transitionBroadcastReceiver: TransitionsReceiver = TransitionsReceiver().apply {
+        action = { setDetectedActivity(it) }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        if (intent.hasExtra(SUPPORTED_ACTIVITY_KEY)) {
+            val supportedActivity = intent.getSerializableExtra(
+                SUPPORTED_ACTIVITY_KEY) as SupportedActivity
+            setDetectedActivity(supportedActivity)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme)
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        client = ActivityRecognition.getClient(this)
-        storage = PreferenceManager.getDefaultSharedPreferences(this)
-
-        val switchTripsRecording : Switch = findViewById(R.id.switchTripsRecording)
-        switchTripsRecording.isChecked = getRadioState()
-
-        switchTripsRecording.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                    && !ActivityTransitionsUtil.hasActivityTransitionPermissions(this)
-                ) {
-                    switchTripsRecording.isChecked = false
-                    requestActivityTransitionPermission()
-                } else {
-                    requestForUpdates()
-                }
+        startBtn.setOnClickListener {
+            if (isPermissionGranted()) {
+                startService(Intent(this, DetectedActivityService::class.java))
+                requestActivityTransitionUpdates()
+                isTrackingStarted = true
+                Toast.makeText(this@MainActivity, "You've started activity tracking",
+                    Toast.LENGTH_SHORT).show()
             } else {
-                saveRadioState(false)
-                deregisterForUpdates()
+                requestPermission()
             }
         }
-    }
+        stopBtn.setOnClickListener {
+            stopService(Intent(this, DetectedActivityService::class.java))
+            removeActivityTransitionUpdates()
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
-        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-            AppSettingsDialog.Builder(this).build().show()
-        } else {
-            requestActivityTransitionPermission()
+            Toast.makeText(this, "You've stopped tracking your activity", Toast.LENGTH_SHORT).show()
+        }
+        resetBtn.setOnClickListener {
+            resetTracking()
         }
     }
 
-    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
-        val switchTripsRecording : Switch = findViewById(R.id.switchTripsRecording)
-        switchTripsRecording.isChecked = true
-        saveRadioState(true)
-        requestForUpdates()
+    private fun resetTracking() {
+        isTrackingStarted = false
+        setDetectedActivity(SupportedActivity.NOT_STARTED)
+        removeActivityTransitionUpdates()
+        stopService(Intent(this, DetectedActivityService::class.java))
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
+    override fun onResume() {
+        super.onResume()
+        registerReceiver(transitionBroadcastReceiver, IntentFilter(TRANSITIONS_RECEIVER_ACTION))
+    }
+
+    override fun onPause() {
+        unregisterReceiver(transitionBroadcastReceiver)
+        super.onPause()
+    }
+
+    override fun onDestroy() {
+        removeActivityTransitionUpdates()
+        stopService(Intent(this, DetectedActivityService::class.java))
+        super.onDestroy()
+    }
+
+    private fun setDetectedActivity(supportedActivity: SupportedActivity) {
+        activityImage.setImageDrawable(ContextCompat.getDrawable(this, supportedActivity.activityImage))
+        activityTitle.text = getString(supportedActivity.activityText)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
+                                            grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.ACTIVITY_RECOGNITION).not() &&
+            grantResults.size == 1 &&
+            grantResults[0] == PackageManager.PERMISSION_DENIED) {
+            showSettingsDialog(this)
+        } else if (requestCode == PERMISSION_REQUEST_ACTIVITY_RECOGNITION &&
+            permissions.contains(Manifest.permission.ACTIVITY_RECOGNITION) &&
+            grantResults.size == 1 &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            Log.d("permission_result", "permission granted")
+            startService(Intent(this, DetectedActivityService::class.java))
+            requestActivityTransitionUpdates()
+            isTrackingStarted = true
+        }
     }
-
-    private fun requestForUpdates() {
-        client
-            .requestActivityTransitionUpdates(
-                ActivityTransitionsUtil.getActivityTransitionRequest(),
-                getPendingIntent()
-            )
-            .addOnSuccessListener {
-                showToast("successful registration")
-            }
-            .addOnFailureListener { e: Exception ->
-                showToast("Unsuccessful registration")
-            }
-    }
-
-    private fun deregisterForUpdates() {
-        client
-            .removeActivityTransitionUpdates(getPendingIntent())
-            .addOnSuccessListener {
-                getPendingIntent().cancel()
-                showToast("successful deregistration")
-            }
-            .addOnFailureListener { e: Exception ->
-                showToast("unsuccessful deregistration")
-            }
-    }
-
-    private fun getPendingIntent(): PendingIntent {
-        val intent = Intent(this, ActivityTransitionReceiver::class.java)
-        return PendingIntent.getBroadcast(
-            this,
-            Constants.REQUEST_CODE_INTENT_ACTIVITY_TRANSITION,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
-        )
-    }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private fun requestActivityTransitionPermission() {
-        EasyPermissions.requestPermissions(
-            this,
-            "You need to allow activity transition permissions in order to use this feature",
-            Constants.REQUEST_CODE_ACTIVITY_TRANSITION,
-            Manifest.permission.ACTIVITY_RECOGNITION
-        )
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG)
-            .show()
-    }
-
-    private fun saveRadioState(value: Boolean) {
-        storage
-            .edit()
-            .putBoolean(ACTIVITY_TRANSITION_STORAGE, value)
-            .apply()
-    }
-
-    private fun getRadioState() = storage.getBoolean(ACTIVITY_TRANSITION_STORAGE, false)
 }
