@@ -46,7 +46,8 @@ class DetectedActivityReceiver : BroadcastReceiver() {
             .filter {
                 it.type == DetectedActivity.STILL ||
                         it.type == DetectedActivity.WALKING ||
-                        it.type == DetectedActivity.RUNNING
+                        it.type == DetectedActivity.RUNNING ||
+                        it.type == DetectedActivity.IN_VEHICLE
             }
             .filter { it.confidence > RELIABLE_CONFIDENCE }
             .run {
@@ -69,11 +70,11 @@ class DetectedActivityReceiver : BroadcastReceiver() {
         val builder = NotificationCompat.Builder(context, DETECTED_ACTIVITY_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(context.getString(activity.activityText))
-            .setContentText("Your pet is ${detectedActivity.confidence}% sure of it")
+            .setContentText("With ${detectedActivity.confidence}% confidence")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setOnlyAlertOnce(true)
-            .setAutoCancel(true)
+            //.setAutoCancel(true)
 
         with(NotificationManagerCompat.from(context)) {
             notify(DETECTED_ACTIVITY_NOTIFICATION_ID, builder.build())

@@ -32,8 +32,8 @@
     <string name="running">Running</string>
     <string name="in_vehicle">In vehicle</string>
 
-    <string name="still_text">You are currently standing still!</string>
-    <string name="walking_text">You are walking!</string>
-    <string name="running_text">You are running, keep doing it!</string>
-    <string name="in_vehicle_text">You are in the vehicle!</string>
+    <string name="still_text">Still</string>
+    <string name="walking_text">Walking</string>
+    <string name="running_text">Running</string>
+    <string name="in_vehicle_text">In vehicle</string>
 </resources>

@@ -27,9 +27,9 @@ class TransitionsReceiver: BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        // 1
+
         if (ActivityTransitionResult.hasResult(intent)) {
-            // 2
+
             val result = ActivityTransitionResult.extractResult(intent)
             result?.let { handleTransitionEvents(it.transitionEvents) }
         }
@@ -37,9 +37,9 @@ class TransitionsReceiver: BroadcastReceiver() {
 
     private fun handleTransitionEvents(transitionEvents: List<ActivityTransitionEvent>) {
         transitionEvents
-            // 3
+
             .filter { it.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER }
-            // 4
+
             .forEach { action?.invoke(SupportedActivity.fromActivityType(it.activityType)) }
     }
 }
