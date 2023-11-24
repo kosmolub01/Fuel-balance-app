@@ -9,7 +9,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.google.android.gms.location.ActivityRecognitionClient
 import com.example.fuelbalanceapp.*
 
-const val ACTIVITY_UPDATES_INTERVAL = 500L
+const val ACTIVITY_UPDATES_INTERVAL = 0L
 
 class DetectedActivityService : Service() {
 

@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.android.gms.location.ActivityRecognitionResult
@@ -17,9 +18,9 @@ import com.example.fuelbalanceapp.SUPPORTED_ACTIVITY_KEY
 import com.example.fuelbalanceapp.SupportedActivity
 
 private const val DETECTED_PENDING_INTENT_REQUEST_CODE = 100
-private const val RELIABLE_CONFIDENCE = 75
+private const val RELIABLE_CONFIDENCE = 50
 
-private const val DETECTED_ACTIVITY_CHANNEL_ID = "detected_activity_channel_id"
+const val DETECTED_ACTIVITY_CHANNEL_ID = "detected_activity_channel_id"
 const val DETECTED_ACTIVITY_NOTIFICATION_ID = 10
 
 class DetectedActivityReceiver : BroadcastReceiver() {
@@ -52,6 +53,7 @@ class DetectedActivityReceiver : BroadcastReceiver() {
             .filter { it.confidence > RELIABLE_CONFIDENCE }
             .run {
                 if (isNotEmpty()) {
+                    Log.d("DetectedActReceiver", "handleDetectedActivities()")
                     showNotification(this[0], context)
                 }
             }
@@ -74,7 +76,7 @@ class DetectedActivityReceiver : BroadcastReceiver() {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setOnlyAlertOnce(true)
-            //.setAutoCancel(true)
+            .setAutoCancel(true)
 
         with(NotificationManagerCompat.from(context)) {
             notify(DETECTED_ACTIVITY_NOTIFICATION_ID, builder.build())

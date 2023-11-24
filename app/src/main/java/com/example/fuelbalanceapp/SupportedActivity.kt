@@ -12,7 +12,7 @@ enum class SupportedActivity(
     @StringRes val activityText: Int
 ) {
 
-    NOT_STARTED(R.drawable.time_to_start, R.string.time_to_start),
+    NOT_ENABLED(R.drawable.time_to_start, R.string.enable_trips_recording),
     STILL(R.drawable.dog_standing, R.string.still_text),
     WALKING(R.drawable.dog_walking, R.string.walking_text),
     RUNNING(R.drawable.dog_running, R.string.running_text),

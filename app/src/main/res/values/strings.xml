@@ -22,10 +22,12 @@
     <string name="activity_update_remove_success">Activity updates removed</string>
     <string name="activity_update_remove_failed">Removing activity updates failed</string>
 
+    <string name="trips_recording">Trips recording</string>
+    <string name="enable_trips_recording">Enable trips recording</string>
+    <string name="status">Status</string>
     <string name="start_tracking">Start</string>
     <string name="stop_tracking">Stop</string>
     <string name="reset_tracking">Reset</string>
-    <string name="time_to_start">It\'s time to start activity</string>
 
     <string name="still">Still</string>
     <string name="walking">Walking</string>
@@ -36,4 +38,5 @@
     <string name="walking_text">Walking</string>
     <string name="running_text">Running</string>
     <string name="in_vehicle_text">In vehicle</string>
+
 </resources>

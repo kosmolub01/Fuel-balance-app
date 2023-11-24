@@ -1,9 +1,12 @@
 package com.example.fuelbalanceapp
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -17,6 +20,9 @@ import com.example.fuelbalanceapp.transitions.TransitionsReceiver
 import com.example.fuelbalanceapp.transitions.removeActivityTransitionUpdates
 import com.example.fuelbalanceapp.transitions.requestActivityTransitionUpdates
 import kotlinx.android.synthetic.main.activity_main.*
+
+const val SHARED_PREFERENCES_FILE = "MyPrefs"
+const val TRIPS_RECORDING_KEY = "tripsRecording"
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,6 +51,28 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Load tripsRecording from SharedPreferences and set the switch accordingly, start service,
+        // request activity transition updates.
+        val sharedPreferences = this.getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE)
+        val tripsRecording: Boolean = sharedPreferences.getBoolean(TRIPS_RECORDING_KEY, false)
+        switchTripsRecording.isChecked = tripsRecording
+
+        // According to the switch saved state, start tracking right away after starting the app.
+        if(switchTripsRecording.isChecked) {
+            startTracking()
+        }
+
+        switchTripsRecording.setOnCheckedChangeListener { _, isChecked ->
+            // Save tripsRecording to SharedPreferences when it changes
+            saveTripsRecordingToSharedPreferences(isChecked)
+            // Handle the switch state change
+            if (isChecked) {
+                startTracking()
+            } else {
+                resetTracking()
+            }
+        }
+
         startBtn.setOnClickListener {
             if (isPermissionGranted()) {
                 startService(Intent(this, DetectedActivityService::class.java))
@@ -69,9 +97,22 @@ class MainActivity : AppCompatActivity() {
 
     private fun resetTracking() {
         isTrackingStarted = false
-        setDetectedActivity(SupportedActivity.NOT_STARTED)
+        setDetectedActivity(SupportedActivity.NOT_ENABLED)
         removeActivityTransitionUpdates()
         stopService(Intent(this, DetectedActivityService::class.java))
+        Toast.makeText(this, "You've stopped tracking your activity", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun startTracking() {
+        if (isPermissionGranted()) {
+            startService(Intent(this, DetectedActivityService::class.java))
+            requestActivityTransitionUpdates()
+            isTrackingStarted = true
+            Toast.makeText(this@MainActivity, "You've started activity tracking",
+                Toast.LENGTH_SHORT).show()
+        } else {
+            requestPermission()
+        }
     }
 
     override fun onResume() {
@@ -113,5 +154,13 @@ class MainActivity : AppCompatActivity() {
             requestActivityTransitionUpdates()
             isTrackingStarted = true
         }
+    }
+
+    private fun saveTripsRecordingToSharedPreferences(isChecked: Boolean) {
+        // Save tripsRecording to SharedPreferences
+        val sharedPreferences = this.getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE)
+        val editor: SharedPreferences.Editor = sharedPreferences.edit()
+        editor.putBoolean(TRIPS_RECORDING_KEY, isChecked)
+        editor.apply()
     }
 }
