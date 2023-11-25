@@ -25,9 +25,10 @@
     <string name="trips_recording">Trips recording</string>
     <string name="enable_trips_recording">Enable trips recording</string>
     <string name="status">Status</string>
-    <string name="start_tracking">Start</string>
-    <string name="stop_tracking">Stop</string>
-    <string name="reset_tracking">Reset</string>
+    <string name="balance">Balance</string>
+    <string name="set_fuel_consumption">Set fuel consumption</string>
+    <string name="trips_history">View trips history</string>
+    <string name="reset">Reset</string>
 
     <string name="still">Still</string>
     <string name="walking">Walking</string>

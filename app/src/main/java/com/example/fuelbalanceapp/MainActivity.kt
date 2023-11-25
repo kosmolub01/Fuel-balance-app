@@ -6,14 +6,12 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.example.fuelbalanceapp.detectedactivity.DetectedActivityService
 import com.example.fuelbalanceapp.transitions.TRANSITIONS_RECEIVER_ACTION
 import com.example.fuelbalanceapp.transitions.TransitionsReceiver
@@ -27,10 +25,6 @@ const val TRIPS_RECORDING_KEY = "tripsRecording"
 class MainActivity : AppCompatActivity() {
 
     private var isTrackingStarted = false
-        set(value) {
-            resetBtn.visibility = if(value) View.VISIBLE else View.GONE
-            field = value
-        }
 
     private val transitionBroadcastReceiver: TransitionsReceiver = TransitionsReceiver().apply {
         action = { setDetectedActivity(it) }
@@ -73,8 +67,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        startBtn.setOnClickListener {
-            if (isPermissionGranted()) {
+        buttonSetFuelConsumption.setOnClickListener {
+            """if (isPermissionGranted()) {
                 startService(Intent(this, DetectedActivityService::class.java))
                 requestActivityTransitionUpdates()
                 isTrackingStarted = true
@@ -82,16 +76,16 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT).show()
             } else {
                 requestPermission()
-            }
+            }"""
         }
-        stopBtn.setOnClickListener {
-            stopService(Intent(this, DetectedActivityService::class.java))
+        buttonTripsHistory.setOnClickListener {
+            """stopService(Intent(this, DetectedActivityService::class.java))
             removeActivityTransitionUpdates()
 
-            Toast.makeText(this, "You've stopped tracking your activity", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "You've stopped tracking your activity", Toast.LENGTH_SHORT).show()"""
         }
-        resetBtn.setOnClickListener {
-            resetTracking()
+        buttonReset.setOnClickListener {
+            //resetTracking()
         }
     }
 
@@ -133,7 +127,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setDetectedActivity(supportedActivity: SupportedActivity) {
-        activityImage.setImageDrawable(ContextCompat.getDrawable(this, supportedActivity.activityImage))
+        //activityImage.setImageDrawable(ContextCompat.getDrawable(this, supportedActivity.activityImage))
         activityTitle.text = getString(supportedActivity.activityText)
     }
 
