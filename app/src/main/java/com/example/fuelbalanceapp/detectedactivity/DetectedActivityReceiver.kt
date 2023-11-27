@@ -18,7 +18,7 @@ import com.example.fuelbalanceapp.SUPPORTED_ACTIVITY_KEY
 import com.example.fuelbalanceapp.SupportedActivity
 
 private const val DETECTED_PENDING_INTENT_REQUEST_CODE = 100
-private const val RELIABLE_CONFIDENCE = 50
+private const val RELIABLE_CONFIDENCE = 75
 
 const val DETECTED_ACTIVITY_CHANNEL_ID = "detected_activity_channel_id"
 const val DETECTED_ACTIVITY_NOTIFICATION_ID = 10
@@ -36,6 +36,7 @@ class DetectedActivityReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         if (ActivityRecognitionResult.hasResult(intent)) {
+            Log.d("DetectedActivityRec", "onReceive")
             val result = ActivityRecognitionResult.extractResult(intent)
             result?.let { handleDetectedActivities(it.probableActivities, context) }
         }

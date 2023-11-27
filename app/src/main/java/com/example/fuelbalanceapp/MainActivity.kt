@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
             val supportedActivity = intent.getSerializableExtra(
                 SUPPORTED_ACTIVITY_KEY) as SupportedActivity
             setDetectedActivity(supportedActivity)
+            Log.d("onNewIntent", "onNewIntent")
         }
     }
 
