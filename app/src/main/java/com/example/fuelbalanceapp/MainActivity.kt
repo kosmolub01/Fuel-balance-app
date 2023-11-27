@@ -123,7 +123,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         Log.d("onDestroy", "onDestroy")
         removeActivityTransitionUpdates()
-        stopService(Intent(this, DetectedActivityService::class.java))
+        //stopService(Intent(this, DetectedActivityService::class.java))
         super.onDestroy()
     }
 

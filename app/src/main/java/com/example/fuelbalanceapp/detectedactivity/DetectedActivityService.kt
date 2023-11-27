@@ -1,10 +1,13 @@
 package com.example.fuelbalanceapp.detectedactivity
 
-import android.app.Service
+import android.app.*
+import android.content.Context
 import android.content.Intent
 import android.os.Binder
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.android.gms.location.ActivityRecognitionClient
 import com.example.fuelbalanceapp.*
@@ -23,6 +26,7 @@ class DetectedActivityService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        startForeground(NOTIFICATION_ID, createNotification())
         requestActivityUpdates()
     }
 
@@ -54,9 +58,42 @@ class DetectedActivityService : Service() {
         }
     }
 
+    private fun createNotification(): Notification {
+        // Customize the notification according to your app's requirements
+        val notificationChannelId = "foreground_activity_channel_id"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationChannel = NotificationChannel(
+                notificationChannelId,
+                "Fuel Balance App",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
+
+        return NotificationCompat.Builder(this, notificationChannelId)
+            .setContentTitle("Your Service is Running")
+            .setContentText("Tap to open the app")
+            .setContentIntent(getPendingIntent())
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .build()
+    }
+
+    private fun getPendingIntent(): PendingIntent {
+        // Add an intent to open your app when the notification is tapped
+        val intent = Intent(this, MainActivity::class.java)
+        return PendingIntent.getActivity(this, 0, intent, 0)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         removeActivityUpdates()
+        stopForeground(true)
         NotificationManagerCompat.from(this).cancel(DETECTED_ACTIVITY_NOTIFICATION_ID)
+    }
+
+    companion object {
+        private const val NOTIFICATION_ID = 1
     }
 }
