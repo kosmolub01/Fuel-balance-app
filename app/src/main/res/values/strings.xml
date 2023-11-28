@@ -29,9 +29,11 @@
     <string name="balance">Balance</string>
     <string name="set_fuel_consumption">Set fuel consumption</string>
     <string name="trips_history">View trips history</string>
-    <string name="reset">Reset</string>
+    <string name="add_fuel_purchase">Add fuel purchase</string>
     <string name="fuel_consumption">Car fuel consumption (l/100km)</string>
     <string name="save_car_fuel_consumption">Save</string>
+    <string name="add_fuel_purchase_with_current_date">Add fuel purchase with current date (l)</string>
+    <string name="add_fuel_purchase_to_the_list">Add</string>
 
     <string name="still">Still</string>
     <string name="walking">Walking</string>

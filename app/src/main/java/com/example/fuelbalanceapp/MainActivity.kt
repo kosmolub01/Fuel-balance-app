@@ -75,16 +75,12 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        buttonTripsHistory.setOnClickListener {
-            """stopService(Intent(this, DetectedActivityService::class.java))
-            removeActivityTransitionUpdates()
-
-            Toast.makeText(this, "You've stopped tracking your activity", Toast.LENGTH_SHORT).show()"""
+        buttonAddFuelPurchase.setOnClickListener {
+            val intent = Intent(this@MainActivity, AddFuelPurchase::class.java)
+            startActivity(intent)
         }
 
-        buttonReset.setOnClickListener {
-            //resetTracking()
-        }
+
     }
 
     private fun resetTracking() {

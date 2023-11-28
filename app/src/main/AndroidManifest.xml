@@ -30,8 +30,13 @@
         <activity
             android:name=".SetFuelConsumption"
             android:exported="false"
-            android:parentActivityName=".MainActivity"
-            android:label="Set Fuel Consumption"/>
+            android:label="Set Fuel Consumption"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".AddFuelPurchase"
+            android:exported="false"
+            android:label="Add Fuel Purchase"
+            android:parentActivityName=".MainActivity"/>
 
         <service android:name=".detectedactivity.DetectedActivityService" />
 

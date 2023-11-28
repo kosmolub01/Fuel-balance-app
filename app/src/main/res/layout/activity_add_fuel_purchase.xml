@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SetFuelConsumption">
+    tools:context=".AddFuelPurchase">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -14,42 +14,41 @@
         tools:layout_editor_absoluteY="-112dp">
 
         <Button
-            android:id="@+id/buttonSaveCarFuelConsumption"
+            android:id="@+id/buttonAddFuelPurchaseToTheList"
             android:layout_width="119dp"
             android:layout_height="44dp"
             android:layout_marginStart="32dp"
             android:layout_marginTop="16dp"
             android:background="@drawable/button_background"
-            android:text="@string/save_car_fuel_consumption"
+            android:text="@string/add_fuel_purchase_to_the_list"
             android:textColor="@android:color/white"
             android:textSize="20sp"
             android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="@+id/buttonViewTripsHistory"
-            app:layout_constraintStart_toEndOf="@+id/decimalFuelConsumption"
-            app:layout_constraintTop_toBottomOf="@+id/textViewFuelConsumption"
+            app:layout_constraintStart_toEndOf="@+id/decimalFuelPurchase"
+            app:layout_constraintTop_toBottomOf="@+id/textViewAddFuelPurchase"
             tools:visibility="visible" />
 
         <EditText
-            android:id="@+id/decimalFuelConsumption"
+            android:id="@+id/decimalFuelPurchase"
             android:layout_width="192dp"
             android:layout_height="56dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:ems="10"
             android:inputType="numberDecimal"
-            app:layout_constraintStart_toStartOf="@+id/textViewFuelConsumption"
-            app:layout_constraintTop_toBottomOf="@+id/textViewFuelConsumption" />
+            app:layout_constraintStart_toStartOf="@+id/textViewAddFuelPurchase"
+            app:layout_constraintTop_toBottomOf="@+id/textViewAddFuelPurchase" />
 
         <TextView
-            android:id="@+id/textViewFuelConsumption"
+            android:id="@+id/textViewAddFuelPurchase"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:labelFor="@id/decimalFuelConsumption"
-            android:text="@string/fuel_consumption"
+            android:labelFor="@id/decimalFuelPurchase"
+            android:text="@string/add_fuel_purchase_with_current_date"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.128"
+            app:layout_constraintHorizontal_bias="0.231"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
