@@ -24,11 +24,14 @@
 
     <string name="trips_recording">Trips recording</string>
     <string name="enable_trips_recording">Enable trips recording</string>
+    <string name="update_in_progress">Update of status in progress</string>
     <string name="status">Status</string>
     <string name="balance">Balance</string>
     <string name="set_fuel_consumption">Set fuel consumption</string>
     <string name="trips_history">View trips history</string>
     <string name="reset">Reset</string>
+    <string name="fuel_consumption">Car fuel consumption (l/100km)</string>
+    <string name="save_car_fuel_consumption">Save</string>
 
     <string name="still">Still</string>
     <string name="walking">Walking</string>

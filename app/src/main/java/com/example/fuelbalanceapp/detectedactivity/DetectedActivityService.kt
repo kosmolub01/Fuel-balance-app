@@ -59,7 +59,7 @@ class DetectedActivityService : Service() {
     }
 
     private fun createNotification(): Notification {
-        // Customize the notification according to your app's requirements
+
         val notificationChannelId = "foreground_activity_channel_id"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
@@ -73,10 +73,11 @@ class DetectedActivityService : Service() {
         }
 
         return NotificationCompat.Builder(this, notificationChannelId)
-            .setContentTitle("Your Service is Running")
+            .setContentTitle("Trips recording is ON")
             .setContentText("Tap to open the app")
             .setContentIntent(getPendingIntent())
             .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .build()
     }
 

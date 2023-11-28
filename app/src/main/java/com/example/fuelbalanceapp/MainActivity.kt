@@ -8,7 +8,6 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -58,33 +57,31 @@ class MainActivity : AppCompatActivity() {
         }
 
         switchTripsRecording.setOnCheckedChangeListener { _, isChecked ->
-            // Save tripsRecording to SharedPreferences when it changes
+            // Save tripsRecording to SharedPreferences when it changes.
             saveTripsRecordingToSharedPreferences(isChecked)
-            // Handle the switch state change
+            // Handle the switch state change.
             if (isChecked) {
                 startTracking()
+                Toast.makeText(this@MainActivity, "Activity tracking has started",
+                    Toast.LENGTH_SHORT).show()
             } else {
                 resetTracking()
             }
         }
 
         buttonSetFuelConsumption.setOnClickListener {
-            """if (isPermissionGranted()) {
-                startService(Intent(this, DetectedActivityService::class.java))
-                requestActivityTransitionUpdates()
-                isTrackingStarted = true
-                Toast.makeText(this@MainActivity, "You've started activity tracking",
-                    Toast.LENGTH_SHORT).show()
-            } else {
-                requestPermission()
-            }"""
+            val intent = Intent(this@MainActivity, SetFuelConsumption::class.java)
+            //intent.putExtra("key", value) //Optional parameters
+            startActivity(intent)
         }
+
         buttonTripsHistory.setOnClickListener {
             """stopService(Intent(this, DetectedActivityService::class.java))
             removeActivityTransitionUpdates()
 
             Toast.makeText(this, "You've stopped tracking your activity", Toast.LENGTH_SHORT).show()"""
         }
+
         buttonReset.setOnClickListener {
             //resetTracking()
         }
@@ -95,16 +92,15 @@ class MainActivity : AppCompatActivity() {
         setDetectedActivity(SupportedActivity.NOT_ENABLED)
         removeActivityTransitionUpdates()
         stopService(Intent(this, DetectedActivityService::class.java))
-        Toast.makeText(this, "You've stopped tracking your activity", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Activity tracking has stopped", Toast.LENGTH_SHORT).show()
     }
 
     private fun startTracking() {
         if (isPermissionGranted()) {
             startService(Intent(this, DetectedActivityService::class.java))
             requestActivityTransitionUpdates()
+            setDetectedActivity(SupportedActivity.UPDATE_IN_PROGRESS)
             isTrackingStarted = true
-            Toast.makeText(this@MainActivity, "You've started activity tracking",
-                Toast.LENGTH_SHORT).show()
         } else {
             requestPermission()
         }

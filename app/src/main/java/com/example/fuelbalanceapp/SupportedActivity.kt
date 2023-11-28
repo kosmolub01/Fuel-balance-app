@@ -13,6 +13,7 @@ enum class SupportedActivity(
 ) {
 
     NOT_ENABLED(R.drawable.time_to_start, R.string.enable_trips_recording),
+    UPDATE_IN_PROGRESS(R.drawable.time_to_start, R.string.update_in_progress),
     STILL(R.drawable.dog_standing, R.string.still_text),
     WALKING(R.drawable.dog_walking, R.string.walking_text),
     RUNNING(R.drawable.dog_running, R.string.running_text),
