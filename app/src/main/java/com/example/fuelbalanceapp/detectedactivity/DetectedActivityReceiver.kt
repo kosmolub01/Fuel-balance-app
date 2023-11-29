@@ -71,7 +71,7 @@ class DetectedActivityReceiver : BroadcastReceiver() {
         val activity = SupportedActivity.fromActivityType(detectedActivity.type)
 
         val builder = NotificationCompat.Builder(context, DETECTED_ACTIVITY_CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_stat_name)
             .setContentTitle(context.getString(activity.activityText))
             .setContentText("With ${detectedActivity.confidence}% confidence")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

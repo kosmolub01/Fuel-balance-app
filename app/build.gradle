@@ -45,4 +45,6 @@ dependencies {
     // TUTORIAL DEPENDENCIES HERE
     implementation 'com.google.android.gms:play-services-location:18.0.0'
 
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.4.6'
+
 }

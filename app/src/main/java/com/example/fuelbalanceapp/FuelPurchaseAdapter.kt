@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 
@@ -43,6 +44,11 @@ class FuelPurchaseAdapter(private val fuelPurchases: MutableList<FuelPurchase>, 
         }
 
         popupMenu.show()
+    }
+
+    fun addFuelPurchase(fuelPurchase: FuelPurchase) {
+        fuelPurchases.add(0, fuelPurchase) // Add at the beginning to show the latest purchase first.
+        notifyItemInserted(0)
     }
 
     private fun deleteItem(position: Int) {

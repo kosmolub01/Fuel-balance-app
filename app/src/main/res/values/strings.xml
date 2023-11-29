@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Fuel Balance App</string>
+    <string name="app_name">Fuel Balance</string>
 
     <string name="permission_rational_dialog_title">Activity Recognition Permission Needed</string>
     <string name="permission_rational_dialog_message">To get information about your activity, you need to give Activity Recognition permission to Fuel Balance App.</string>
