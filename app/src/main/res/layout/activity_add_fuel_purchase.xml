@@ -1,57 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AddFuelPurchase">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".ui.notifications.NotificationsFragment"
-        tools:layout_editor_absoluteX="134dp"
-        tools:layout_editor_absoluteY="-112dp">
+    <Button
+        android:id="@+id/buttonAddFuelPurchaseToTheList"
+        android:layout_width="119dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/button_background"
+        android:text="@string/add_fuel_purchase_to_the_list"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:visibility="visible"
+        app:layout_constraintStart_toEndOf="@+id/decimalFuelPurchase"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAddFuelPurchase"
+        tools:visibility="visible" />
 
-        <Button
-            android:id="@+id/buttonAddFuelPurchaseToTheList"
-            android:layout_width="119dp"
-            android:layout_height="44dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/button_background"
-            android:text="@string/add_fuel_purchase_to_the_list"
-            android:textColor="@android:color/white"
-            android:textSize="20sp"
-            android:visibility="visible"
-            app:layout_constraintStart_toEndOf="@+id/decimalFuelPurchase"
-            app:layout_constraintTop_toBottomOf="@+id/textViewAddFuelPurchase"
-            tools:visibility="visible" />
+    <EditText
+        android:id="@+id/decimalFuelPurchase"
+        android:layout_width="192dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="@string/type_here"
+        android:inputType="numberDecimal"
+        app:layout_constraintStart_toStartOf="@+id/textViewAddFuelPurchase"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAddFuelPurchase" />
 
-        <EditText
-            android:id="@+id/decimalFuelPurchase"
-            android:layout_width="192dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:ems="10"
-            android:inputType="numberDecimal"
-            app:layout_constraintStart_toStartOf="@+id/textViewAddFuelPurchase"
-            app:layout_constraintTop_toBottomOf="@+id/textViewAddFuelPurchase" />
+    <TextView
+        android:id="@+id/textViewAddFuelPurchase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:labelFor="@id/decimalFuelPurchase"
+        android:text="@string/add_fuel_purchase_with_current_date"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.231"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/textViewAddFuelPurchase"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:labelFor="@id/decimalFuelPurchase"
-            android:text="@string/add_fuel_purchase_with_current_date"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.231"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/RecyclerViewFuelPurchases"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:scrollbars="vertical"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/decimalFuelPurchase" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/textViewEmpty"
+        android:layout_width="179dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:text="@string/no_fuel_purchases_available"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/RecyclerViewFuelPurchases"
+        app:layout_constraintEnd_toEndOf="@+id/RecyclerViewFuelPurchases"
+        app:layout_constraintStart_toStartOf="@+id/RecyclerViewFuelPurchases"
+        app:layout_constraintTop_toTopOf="@+id/RecyclerViewFuelPurchases"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

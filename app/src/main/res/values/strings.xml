@@ -31,6 +31,7 @@
     <string name="trips_history">View trips history</string>
     <string name="add_fuel_purchase">Add fuel purchase</string>
     <string name="fuel_consumption">Car fuel consumption (l/100km)</string>
+    <string name="type_here">Type here...</string>
     <string name="save_car_fuel_consumption">Save</string>
     <string name="add_fuel_purchase_with_current_date">Add fuel purchase with current date (l)</string>
     <string name="add_fuel_purchase_to_the_list">Add</string>
@@ -44,5 +45,6 @@
     <string name="walking_text">Walking</string>
     <string name="running_text">Running</string>
     <string name="in_vehicle_text">In vehicle</string>
+    <string name="no_fuel_purchases_available">No fuel purchases available.</string>
 
 </resources>

@@ -77,7 +77,7 @@ class DetectedActivityService : Service() {
             .setContentText("Tap to open the app")
             .setContentIntent(getPendingIntent())
             .setPriority(NotificationCompat.PRIORITY_LOW)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_stat_name)
             .build()
     }
 

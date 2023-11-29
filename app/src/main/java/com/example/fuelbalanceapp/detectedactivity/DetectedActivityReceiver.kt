@@ -71,13 +71,14 @@ class DetectedActivityReceiver : BroadcastReceiver() {
         val activity = SupportedActivity.fromActivityType(detectedActivity.type)
 
         val builder = NotificationCompat.Builder(context, DETECTED_ACTIVITY_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.mipmap.ic_launcher_foreground)
             .setContentTitle(context.getString(activity.activityText))
             .setContentText("With ${detectedActivity.confidence}% confidence")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setOnlyAlertOnce(true)
             .setAutoCancel(true)
+
 
         with(NotificationManagerCompat.from(context)) {
             notify(DETECTED_ACTIVITY_NOTIFICATION_ID, builder.build())
