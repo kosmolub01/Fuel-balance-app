@@ -1,4 +1,4 @@
-package com.example.fuelbalanceapp
+package com.example.fuelbalanceapp.fuelpurchase
 
 import android.os.Bundle
 import android.view.View
@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.fuelbalanceapp.R
 import com.jakewharton.threetenabp.AndroidThreeTen
 import kotlinx.android.synthetic.main.activity_add_fuel_purchase.*
 import org.threeten.bp.LocalDate

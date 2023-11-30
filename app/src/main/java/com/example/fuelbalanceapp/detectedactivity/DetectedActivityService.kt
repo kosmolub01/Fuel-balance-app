@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.android.gms.location.ActivityRecognitionClient
 import com.example.fuelbalanceapp.*
+import com.google.android.gms.location.DetectedActivity
 
 const val ACTIVITY_UPDATES_INTERVAL = 0L
 
@@ -60,7 +61,7 @@ class DetectedActivityService : Service() {
 
     private fun createNotification(): Notification {
 
-        val notificationChannelId = "foreground_activity_channel_id"
+        val notificationChannelId = "foreground_activity_detection_channel_id"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
                 notificationChannelId,
@@ -82,15 +83,21 @@ class DetectedActivityService : Service() {
     }
 
     private fun getPendingIntent(): PendingIntent {
-        // Add an intent to open your app when the notification is tapped
+        // Add an intent to open your app when the notification is tapped.
         val intent = Intent(this, MainActivity::class.java)
         return PendingIntent.getActivity(this, 0, intent, 0)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+
         removeActivityUpdates()
         stopForeground(true)
+
+        // Stop tripRecordingService.
+        val tripRecordingServiceIntent = Intent(this, TripRecordingService::class.java)
+        this.stopService(tripRecordingServiceIntent)
+
         NotificationManagerCompat.from(this).cancel(DETECTED_ACTIVITY_NOTIFICATION_ID)
     }
 

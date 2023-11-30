@@ -6,19 +6,19 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.example.fuelbalanceapp.*
 import com.google.android.gms.location.ActivityRecognitionResult
 import com.google.android.gms.location.DetectedActivity
-import com.example.fuelbalanceapp.MainActivity
-import com.example.fuelbalanceapp.R
-import com.example.fuelbalanceapp.SUPPORTED_ACTIVITY_KEY
-import com.example.fuelbalanceapp.SupportedActivity
 
 private const val DETECTED_PENDING_INTENT_REQUEST_CODE = 100
 private const val RELIABLE_CONFIDENCE = 75
+
+private const val PREVIOUS_ACTIVITY_KEY = "previousActivity"
 
 const val DETECTED_ACTIVITY_CHANNEL_ID = "detected_activity_channel_id"
 const val DETECTED_ACTIVITY_NOTIFICATION_ID = 10
@@ -55,6 +55,18 @@ class DetectedActivityReceiver : BroadcastReceiver() {
             .run {
                 if (isNotEmpty()) {
                     Log.d("DetectedActReceiver", "handleDetectedActivities()")
+
+                    val tripRecordingServiceIntent = Intent(context, TripRecordingService::class.java)
+
+                    // Check the detected activity and start or stop the service accordingly.
+                    if (this[0].type == DetectedActivity.WALKING) {
+                        // Start the service.
+                        context.startService(tripRecordingServiceIntent)
+                    } else {
+                        // Stop the service.
+                        context.stopService(tripRecordingServiceIntent)
+                    }
+
                     showNotification(this[0], context)
                 }
             }
@@ -101,5 +113,13 @@ class DetectedActivityReceiver : BroadcastReceiver() {
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
+    }
+
+    private fun savePreviousActivityToSharedPreferences(context: Context, previousActivity: String) {
+        // Save tripsRecording to SharedPreferences.
+        val sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE)
+        val editor: SharedPreferences.Editor = sharedPreferences.edit()
+        editor.putString(PREVIOUS_ACTIVITY_KEY, previousActivity)
+        editor.apply()
     }
 }

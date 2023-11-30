@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.fuelbalanceapp.detectedactivity.DetectedActivityService
+import com.example.fuelbalanceapp.fuelpurchase.AddFuelPurchase
 import com.example.fuelbalanceapp.transitions.TRANSITIONS_RECEIVER_ACTION
 import com.example.fuelbalanceapp.transitions.TransitionsReceiver
 import com.example.fuelbalanceapp.transitions.removeActivityTransitionUpdates

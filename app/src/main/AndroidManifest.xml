@@ -33,7 +33,7 @@
             android:label="Set Fuel Consumption"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".AddFuelPurchase"
+            android:name=".fuelpurchase.AddFuelPurchase"
             android:exported="false"
             android:label="Add Fuel Purchase"
             android:parentActivityName=".MainActivity"/>
@@ -41,6 +41,9 @@
         <service android:name=".detectedactivity.DetectedActivityService" />
 
         <receiver android:name=".detectedactivity.DetectedActivityReceiver" />
+
+        <service
+            android:name=".TripRecordingService" />
     </application>
 
 </manifest>

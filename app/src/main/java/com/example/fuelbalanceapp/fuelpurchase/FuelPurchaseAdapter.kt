@@ -1,12 +1,12 @@
-package com.example.fuelbalanceapp
+package com.example.fuelbalanceapp.fuelpurchase
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
+import com.example.fuelbalanceapp.R
 
 class FuelPurchaseAdapter(private val fuelPurchases: MutableList<FuelPurchase>, private val context: Context) :
     RecyclerView.Adapter<FuelPurchaseViewHolder>() {
