@@ -17,6 +17,10 @@ const val ACTIVITY_UPDATES_INTERVAL = 0L
 
 class DetectedActivityService : Service() {
 
+    companion object {
+        private const val NOTIFICATION_ID = 1
+    }
+
     inner class LocalBinder : Binder() {
 
         val serverInstance: DetectedActivityService
@@ -97,11 +101,9 @@ class DetectedActivityService : Service() {
         // Stop tripRecordingService.
         val tripRecordingServiceIntent = Intent(this, TripRecordingService::class.java)
         this.stopService(tripRecordingServiceIntent)
+        // User disabled the trips recording.
+        savePreviousActivityToSharedPreferences(this, "NO_WALKING")
 
         NotificationManagerCompat.from(this).cancel(DETECTED_ACTIVITY_NOTIFICATION_ID)
-    }
-
-    companion object {
-        private const val NOTIFICATION_ID = 1
     }
 }

@@ -14,6 +14,8 @@ import androidx.core.app.NotificationManagerCompat
 import com.example.fuelbalanceapp.*
 import com.google.android.gms.location.ActivityRecognitionResult
 import com.google.android.gms.location.DetectedActivity
+import kotlinx.android.synthetic.main.activity_main.*
+import java.lang.IllegalArgumentException
 
 private const val DETECTED_PENDING_INTENT_REQUEST_CODE = 100
 private const val RELIABLE_CONFIDENCE = 75
@@ -54,17 +56,32 @@ class DetectedActivityReceiver : BroadcastReceiver() {
             .filter { it.confidence > RELIABLE_CONFIDENCE }
             .run {
                 if (isNotEmpty()) {
-                    Log.d("DetectedActReceiver", "handleDetectedActivities()")
+                    val activity = when (this[0].type) {
+                        DetectedActivity.STILL -> SupportedActivity.STILL
+                        DetectedActivity.WALKING -> SupportedActivity.WALKING
+                        DetectedActivity.RUNNING -> SupportedActivity.RUNNING
+                        DetectedActivity.IN_VEHICLE -> SupportedActivity.IN_VEHICLE
+                        else -> throw IllegalArgumentException("activity not supported")
+                    }
+                    Log.d("DetectedActReceiver", "DetectedActivity: $activity")
+
+                    // Load previousActivity from SharedPreferences
+                    // and if transition to or from IN_VEHICLE state is detected,
+                    // then start or stop service responsible for recording a trip.
+                    val sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE)
+                    val previousActivity: String? = sharedPreferences.getString(PREVIOUS_ACTIVITY_KEY, "NO_WALKING")
 
                     val tripRecordingServiceIntent = Intent(context, TripRecordingService::class.java)
 
-                    // Check the detected activity and start or stop the service accordingly.
-                    if (this[0].type == DetectedActivity.WALKING) {
-                        // Start the service.
+                    // NO_WALKING -> WALKING
+                    if (this[0].type == DetectedActivity.WALKING && previousActivity == "NO_WALKING") {
+                        savePreviousActivityToSharedPreferences(context, "WALKING")
                         context.startService(tripRecordingServiceIntent)
-                    } else {
-                        // Stop the service.
+                    }
+                    // WALKING -> NO_WALKING
+                    else if (this[0].type != DetectedActivity.WALKING && previousActivity == "WALKING") {
                         context.stopService(tripRecordingServiceIntent)
+                        savePreviousActivityToSharedPreferences(context, "NO_WALKING")
                     }
 
                     showNotification(this[0], context)
@@ -114,12 +131,12 @@ class DetectedActivityReceiver : BroadcastReceiver() {
             notificationManager.createNotificationChannel(channel)
         }
     }
+}
 
-    private fun savePreviousActivityToSharedPreferences(context: Context, previousActivity: String) {
-        // Save tripsRecording to SharedPreferences.
-        val sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE)
-        val editor: SharedPreferences.Editor = sharedPreferences.edit()
-        editor.putString(PREVIOUS_ACTIVITY_KEY, previousActivity)
-        editor.apply()
-    }
+ fun savePreviousActivityToSharedPreferences(context: Context, previousActivity: String) {
+    // Save previousActivity to SharedPreferences.
+    val sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE)
+    val editor: SharedPreferences.Editor = sharedPreferences.edit()
+    editor.putString(PREVIOUS_ACTIVITY_KEY, previousActivity)
+    editor.apply()
 }
