@@ -101,7 +101,7 @@ class DetectedActivityService : Service() {
         // Stop tripRecordingService.
         val tripRecordingServiceIntent = Intent(this, TripRecordingService::class.java)
         this.stopService(tripRecordingServiceIntent)
-        // User disabled the trips recording.
+        // User disabled the trips recording. // Save NO_WALKING || NO_IN_VEHICLE
         savePreviousActivityToSharedPreferences(this, "NO_WALKING")
 
         NotificationManagerCompat.from(this).cancel(DETECTED_ACTIVITY_NOTIFICATION_ID)

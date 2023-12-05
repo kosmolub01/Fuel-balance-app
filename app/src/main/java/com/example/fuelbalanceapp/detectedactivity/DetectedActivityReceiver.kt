@@ -73,12 +73,12 @@ class DetectedActivityReceiver : BroadcastReceiver() {
 
                     val tripRecordingServiceIntent = Intent(context, TripRecordingService::class.java)
 
-                    // NO_WALKING -> WALKING
+                    // NO_WALKING -> WALKING || NO_IN_VEHICLE -> IN_VEHICLE
                     if (this[0].type == DetectedActivity.WALKING && previousActivity == "NO_WALKING") {
                         savePreviousActivityToSharedPreferences(context, "WALKING")
                         context.startService(tripRecordingServiceIntent)
                     }
-                    // WALKING -> NO_WALKING
+                    // WALKING -> NO_WALKING || IN_VEHICLE -> NO_IN_VEHICLE
                     else if (this[0].type != DetectedActivity.WALKING && previousActivity == "WALKING") {
                         context.stopService(tripRecordingServiceIntent)
                         savePreviousActivityToSharedPreferences(context, "NO_WALKING")

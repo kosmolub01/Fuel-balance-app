@@ -7,34 +7,55 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.provider.Settings
-import androidx.annotation.RequiresApi
+import android.util.Log
 import androidx.core.app.ActivityCompat
 
-const val PERMISSION_REQUEST_ACTIVITY_RECOGNITION = 1000
+const val PERMISSION_REQUEST = 1000
+
+val permissions = arrayOf(
+    Manifest.permission.ACTIVITY_RECOGNITION,
+    Manifest.permission.ACCESS_FINE_LOCATION,
+    //Manifest.permission.ACCESS_BACKGROUND_LOCATION
+)
 
 fun Activity.requestPermission() {
-    if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-            Manifest.permission.ACTIVITY_RECOGNITION).not()) {
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACTIVITY_RECOGNITION),
-            PERMISSION_REQUEST_ACTIVITY_RECOGNITION)
+    var shouldShowRequestPermissionRationale : Boolean = false
+
+    for (permission in permissions) {
+        shouldShowRequestPermissionRationale = ActivityCompat.shouldShowRequestPermissionRationale(this,
+            permission).not()
+    }
+
+    if (shouldShowRequestPermissionRationale) {
+        ActivityCompat.requestPermissions(this, permissions,
+            PERMISSION_REQUEST)
+        Log.d("requestPermission", "requestPermissions")
     } else {
+        Log.d("requestPermission", "showRationalDialog")
         showRationalDialog(this)
     }
 }
 
-fun Activity.isPermissionGranted(): Boolean {
+fun Activity.arePermissionsGranted(): Boolean {
     val isAndroidQOrLater: Boolean =
         android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
 
-    return if (isAndroidQOrLater.not()) {
-        true
+     if (isAndroidQOrLater.not()) {
+         return true
     } else {
-        PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACTIVITY_RECOGNITION
-        )
+        var permissionsGranted : BooleanArray = booleanArrayOf(false, false)
+
+        for (i in permissions.indices) {
+            permissionsGranted[i] = PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(
+                this,
+                permissions[i])
+
+            Log.d("arePermissionsGranted", "permission: ${permissions[i]}")
+            Log.d("arePermissionsGranted", "permissionsGranted: ${permissionsGranted[i]}")
+
+        }
+         return permissionsGranted.all { it }
     }
 }
 
@@ -43,8 +64,8 @@ private fun showRationalDialog(activity: Activity) {
         setTitle(R.string.permission_rational_dialog_title)
         setMessage(R.string.permission_rational_dialog_message)
         setPositiveButton(R.string.permission_rational_dialog_positive_button_text) { _, _ ->
-            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.ACTIVITY_RECOGNITION),
-                PERMISSION_REQUEST_ACTIVITY_RECOGNITION)
+            ActivityCompat.requestPermissions(activity, permissions,
+                PERMISSION_REQUEST)
         }
         setNegativeButton(R.string.permission_rational_dialog_negative_button_text){ dialog, _ ->
             dialog.dismiss()

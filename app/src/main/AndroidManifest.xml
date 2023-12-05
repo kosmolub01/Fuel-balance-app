@@ -5,7 +5,8 @@
 
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
-    
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" /> -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
@@ -43,7 +44,9 @@
 
         <receiver android:name=".detectedactivity.DetectedActivityReceiver" />
 
-        <service android:name=".TripRecordingService" />
+        <service
+            android:name=".TripRecordingService"
+            android:foregroundServiceType="location" />
     </application>
 
 </manifest>

@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import com.example.fuelbalanceapp.detectedactivity.DetectedActivityService
 import com.example.fuelbalanceapp.fuelpurchase.AddFuelPurchase
 import com.example.fuelbalanceapp.transitions.TRANSITIONS_RECEIVER_ACTION
@@ -23,8 +22,6 @@ const val SHARED_PREFERENCES_FILE = "MyPrefs"
 const val TRIPS_RECORDING_KEY = "tripsRecording"
 
 class MainActivity : AppCompatActivity() {
-
-    private var isTrackingStarted = false
 
     private val transitionBroadcastReceiver: TransitionsReceiver = TransitionsReceiver().apply {
         action = { setDetectedActivity(it) }
@@ -52,27 +49,44 @@ class MainActivity : AppCompatActivity() {
         val tripsRecording: Boolean = sharedPreferences.getBoolean(TRIPS_RECORDING_KEY, false)
         switchTripsRecording.isChecked = tripsRecording
 
-        // According to the switch saved state, start tracking right away after starting the app.
+        // According to the switch saved state, start tracking (start service,
+        // request activity transition updates) right away after starting the app.
         if(switchTripsRecording.isChecked) {
-            startTracking()
+            if(arePermissionsGranted()) {
+                startTracking()
+            }
+            else {
+                switchTripsRecording.isChecked = false
+                saveTripsRecordingToSharedPreferences(false)
+            }
         }
 
         switchTripsRecording.setOnCheckedChangeListener { _, isChecked ->
-            // Save tripsRecording to SharedPreferences when it changes.
-            saveTripsRecordingToSharedPreferences(isChecked)
             // Handle the switch state change.
             if (isChecked) {
-                startTracking()
-                Toast.makeText(this@MainActivity, "Activity tracking has started",
-                    Toast.LENGTH_SHORT).show()
+                if(arePermissionsGranted()) {
+                    switchTripsRecording.isChecked = true
+                    saveTripsRecordingToSharedPreferences(true)
+                    startTracking()
+                    Toast.makeText(this@MainActivity, "Activity tracking has started",
+                        Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    requestPermission()
+                    switchTripsRecording.isChecked = false
+                    saveTripsRecordingToSharedPreferences(false)
+                }
+
             } else {
+                switchTripsRecording.isChecked = false
+                Toast.makeText(this, "Activity tracking has stopped", Toast.LENGTH_SHORT).show()
+                saveTripsRecordingToSharedPreferences(false)
                 resetTracking()
             }
         }
 
         buttonSetFuelConsumption.setOnClickListener {
             val intent = Intent(this@MainActivity, SetFuelConsumption::class.java)
-            //intent.putExtra("key", value) //Optional parameters
             startActivity(intent)
         }
 
@@ -85,22 +99,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun resetTracking() {
-        isTrackingStarted = false
         setDetectedActivity(SupportedActivity.NOT_ENABLED)
         removeActivityTransitionUpdates()
         stopService(Intent(this, DetectedActivityService::class.java))
-        Toast.makeText(this, "Activity tracking has stopped", Toast.LENGTH_SHORT).show()
+
     }
 
     private fun startTracking() {
-        if (isPermissionGranted()) {
-            startService(Intent(this, DetectedActivityService::class.java))
-            requestActivityTransitionUpdates()
-            setDetectedActivity(SupportedActivity.UPDATE_IN_PROGRESS)
-            isTrackingStarted = true
-        } else {
-            requestPermission()
-        }
+        startService(Intent(this, DetectedActivityService::class.java))
+        requestActivityTransitionUpdates()
+        setDetectedActivity(SupportedActivity.UPDATE_IN_PROGRESS)
     }
 
     override fun onResume() {
@@ -116,31 +124,45 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         Log.d("onDestroy", "onDestroy")
         removeActivityTransitionUpdates()
-        //stopService(Intent(this, DetectedActivityService::class.java))
         super.onDestroy()
     }
 
     private fun setDetectedActivity(supportedActivity: SupportedActivity) {
-        //activityImage.setImageDrawable(ContextCompat.getDrawable(this, supportedActivity.activityImage))
         activityTitle.text = getString(supportedActivity.activityText)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
                                             grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.ACTIVITY_RECOGNITION).not() &&
-            grantResults.size == 1 &&
-            grantResults[0] == PackageManager.PERMISSION_DENIED) {
-            showSettingsDialog(this)
-        } else if (requestCode == PERMISSION_REQUEST_ACTIVITY_RECOGNITION &&
+
+        Log.d("onRequestPermissionsRes", "grantResults.size = ${grantResults.size}")
+        Log.d("onRequestPermissionsRes", "permissions.contains(Manifest.permission.ACCESS_FINE_LOCATION) = ${permissions.contains(Manifest.permission.ACCESS_FINE_LOCATION)}")
+        Log.d("onRequestPermissionsRes", "permissions.contains(Manifest.permission.ACTIVITY_RECOGNITION) = ${permissions.contains(Manifest.permission.ACTIVITY_RECOGNITION)}")
+
+        if (requestCode == PERMISSION_REQUEST &&
+            permissions.contains(Manifest.permission.ACCESS_FINE_LOCATION) &&
             permissions.contains(Manifest.permission.ACTIVITY_RECOGNITION) &&
-            grantResults.size == 1 &&
-            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Log.d("permission_result", "permission granted")
-            startService(Intent(this, DetectedActivityService::class.java))
-            requestActivityTransitionUpdates()
-            isTrackingStarted = true
+            grantResults.size == 2) {
+
+            // Not all permissions granted.
+            if(grantResults[0] == PackageManager.PERMISSION_DENIED ||
+                grantResults[1] == PackageManager.PERMISSION_DENIED) {
+                showSettingsDialog(this)
+                Log.d("onRequestPermissionsRes", "Not granted")
+            }
+            // All permissions granted.
+            else if (
+                grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+
+                Log.d("onRequestPermissionsRes", "Granted")
+
+                switchTripsRecording.isChecked = true
+                saveTripsRecordingToSharedPreferences(true)
+                startTracking()
+                Toast.makeText(this@MainActivity, "Activity tracking has started",
+                    Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

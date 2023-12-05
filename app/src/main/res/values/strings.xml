@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">Fuel Balance</string>
 
-    <string name="permission_rational_dialog_title">Activity Recognition Permission Needed</string>
-    <string name="permission_rational_dialog_message">To get information about your activity, you need to give Activity Recognition permission to Fuel Balance App.</string>
+    <string name="permission_rational_dialog_title">Permissions Needed</string>
+    <string name="permission_rational_dialog_message">To automatically record your trips and calculate fuel usage, you need to give Activity Recognition and Location permissions to Fuel Balance App</string>
     <string name="permission_rational_dialog_positive_button_text">Request a permission</string>
     <string name="permission_rational_dialog_negative_button_text">No thanks</string>
 
-    <string name="settings_dialog_title">Activity Recognition Permission Needed</string>
-    <string name="settings_dialog_message">Give permission manually inside the app\'s
+    <string name="settings_dialog_title">Permissions Needed</string>
+    <string name="settings_dialog_message">To automatically record your trips and calculate fuel usage, you need to give Activity Recognition and Location permissions to Fuel Balance App.Give permissions manually inside the app\'s
     settings</string>
     <string name="settings_dialog_positive_button_text">Go to settings</string>
     <string name="settings_dialog_negative_button_text">No thanks</string>
