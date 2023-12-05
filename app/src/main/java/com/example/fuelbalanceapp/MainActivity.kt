@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.example.fuelbalanceapp.detectedactivity.DetectedActivityService
 import com.example.fuelbalanceapp.fuelpurchase.AddFuelPurchase
 import com.example.fuelbalanceapp.transitions.TRANSITIONS_RECEIVER_ACTION
@@ -139,29 +140,35 @@ class MainActivity : AppCompatActivity() {
         Log.d("onRequestPermissionsRes", "permissions.contains(Manifest.permission.ACCESS_FINE_LOCATION) = ${permissions.contains(Manifest.permission.ACCESS_FINE_LOCATION)}")
         Log.d("onRequestPermissionsRes", "permissions.contains(Manifest.permission.ACTIVITY_RECOGNITION) = ${permissions.contains(Manifest.permission.ACTIVITY_RECOGNITION)}")
 
+        for(result in grantResults) {
+            Log.d("onRequestPermissionsRes", "result = $result")
+        }
+
         if (requestCode == PERMISSION_REQUEST &&
             permissions.contains(Manifest.permission.ACCESS_FINE_LOCATION) &&
             permissions.contains(Manifest.permission.ACTIVITY_RECOGNITION) &&
             grantResults.size == 2) {
 
             // Not all permissions granted.
-            if(grantResults[0] == PackageManager.PERMISSION_DENIED ||
+            if(
+                grantResults[0] == PackageManager.PERMISSION_DENIED ||
                 grantResults[1] == PackageManager.PERMISSION_DENIED) {
                 showSettingsDialog(this)
                 Log.d("onRequestPermissionsRes", "Not granted")
             }
-            // All permissions granted.
+            // All permissions granted. Inform the user to also allow the app to access location all the time if not yet allowed.
             else if (
                 grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                grantResults[1] == PackageManager.PERMISSION_GRANTED)
+            {
 
-                Log.d("onRequestPermissionsRes", "Granted")
+                Log.d("onRequestPermissionsRes", "Runtime permissions granted. Inform the user to also allow the app to access location all the time")
 
-                switchTripsRecording.isChecked = true
-                saveTripsRecordingToSharedPreferences(true)
-                startTracking()
-                Toast.makeText(this@MainActivity, "Activity tracking has started",
-                    Toast.LENGTH_SHORT).show()
+                if(PackageManager.PERMISSION_DENIED == ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+                    showSettingsDialog(this)
+                }
             }
         }
     }

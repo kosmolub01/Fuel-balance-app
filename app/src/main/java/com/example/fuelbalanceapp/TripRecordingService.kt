@@ -1,16 +1,21 @@
 package com.example.fuelbalanceapp
 
+import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.example.fuelbalanceapp.detectedactivity.DetectedActivityService
+import com.google.android.gms.location.*
 
 class TripRecordingService : Service() {
 
@@ -18,17 +23,56 @@ class TripRecordingService : Service() {
         private const val NOTIFICATION_ID = 2
     }
 
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
     override fun onCreate() {
         super.onCreate()
         startForeground(NOTIFICATION_ID, createNotification())
-        Log.d("TripRecordingService", "Service created")
-        // Additional setup if needed
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        Log.d("TripRecordingService", "onCreate- service created")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d("TripRecordingService", "Service started")
-        // Perform background tasks here
-        return START_NOT_STICKY // so it will not be restarted
+        Log.d("TripRecordingService", "onStartCommand - service started")
+
+        // Check for location permissions.
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.d("TripRecordingService", "onStartCommand - insufficient location permissions")
+            stopSelf() // Stop the service if permissions are not granted.
+            return START_NOT_STICKY
+        }
+
+        // Request location updates
+        val locationRequest = LocationRequest.create().apply {
+            interval = 1000 // Update interval in milliseconds.
+            fastestInterval = 500 // Fastest update interval in milliseconds.
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+
+        return START_NOT_STICKY // so it will not be restarted.
+    }
+
+    // Location callback to handle location updates.
+    private val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult?) {
+            locationResult?.lastLocation?.let { location ->
+                // Handle the received location update
+                Log.d(
+                    "TripRecordingService",
+                    "Location Update - Latitude: ${location.latitude}, Longitude: ${location.longitude}"
+                )
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -36,6 +80,8 @@ class TripRecordingService : Service() {
         Log.d("TripRecordingService", "Service destroyed")
         stopForeground(true)
         // Cleanup or additional tasks on service destroy - tutaj chyba powinno być obliczenie przebytego dystansu
+        // Remove location updates when the service is destroyed
+        fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -63,7 +109,5 @@ class TripRecordingService : Service() {
             .setSmallIcon(R.drawable.ic_stat_name)
             .build()
     }
-
-
 }
 

@@ -16,25 +16,12 @@ const val PERMISSION_REQUEST = 1000
 val permissions = arrayOf(
     Manifest.permission.ACTIVITY_RECOGNITION,
     Manifest.permission.ACCESS_FINE_LOCATION,
-    //Manifest.permission.ACCESS_BACKGROUND_LOCATION
 )
 
 fun Activity.requestPermission() {
-    var shouldShowRequestPermissionRationale : Boolean = false
-
-    for (permission in permissions) {
-        shouldShowRequestPermissionRationale = ActivityCompat.shouldShowRequestPermissionRationale(this,
-            permission).not()
-    }
-
-    if (shouldShowRequestPermissionRationale) {
-        ActivityCompat.requestPermissions(this, permissions,
-            PERMISSION_REQUEST)
-        Log.d("requestPermission", "requestPermissions")
-    } else {
-        Log.d("requestPermission", "showRationalDialog")
-        showRationalDialog(this)
-    }
+    ActivityCompat.requestPermissions(this, permissions,
+        PERMISSION_REQUEST)
+    Log.d("requestPermission", "requestPermissions")
 }
 
 fun Activity.arePermissionsGranted(): Boolean {
@@ -55,7 +42,9 @@ fun Activity.arePermissionsGranted(): Boolean {
             Log.d("arePermissionsGranted", "permissionsGranted: ${permissionsGranted[i]}")
 
         }
-         return permissionsGranted.all { it }
+         return permissionsGranted.all { it } && PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(
+             this,
+             Manifest.permission.ACCESS_BACKGROUND_LOCATION)
     }
 }
 
