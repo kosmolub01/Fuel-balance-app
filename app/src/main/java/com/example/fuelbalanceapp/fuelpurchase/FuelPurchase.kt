@@ -1,3 +1,5 @@
 package com.example.fuelbalanceapp.fuelpurchase
 
-data class FuelPurchase(val amount: String, val date: String)
+import org.threeten.bp.LocalDate
+
+data class FuelPurchase(val date: LocalDate, val amount: Double, var id: Long = 0)

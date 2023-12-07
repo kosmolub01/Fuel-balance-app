@@ -8,13 +8,11 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import com.example.fuelbalanceapp.detectedactivity.DetectedActivityService
 import com.google.android.gms.location.*
 
 class TripRecordingService : Service() {
@@ -24,6 +22,8 @@ class TripRecordingService : Service() {
     }
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var previousLocation: LocationResult? = null
+    private var distance: Double = 0.0
 
     override fun onCreate() {
         super.onCreate()
@@ -35,6 +35,9 @@ class TripRecordingService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("TripRecordingService", "onStartCommand - service started")
+
+        previousLocation = null
+        distance = 0.0
 
         // Check for location permissions.
         if (ActivityCompat.checkSelfPermission(
@@ -71,6 +74,13 @@ class TripRecordingService : Service() {
                     "TripRecordingService",
                     "Location Update - Latitude: ${location.latitude}, Longitude: ${location.longitude}"
                 )
+
+               if( previousLocation != null ) {
+                   distance +=  location.distanceTo(previousLocation!!.lastLocation)
+               }
+
+                previousLocation = locationResult
+
             }
         }
     }
@@ -78,6 +88,7 @@ class TripRecordingService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d("TripRecordingService", "Service destroyed")
+        Log.d("TripRecordingService", "distance = $distance")
         stopForeground(true)
         // Cleanup or additional tasks on service destroy - tutaj chyba powinno być obliczenie przebytego dystansu
         // Remove location updates when the service is destroyed

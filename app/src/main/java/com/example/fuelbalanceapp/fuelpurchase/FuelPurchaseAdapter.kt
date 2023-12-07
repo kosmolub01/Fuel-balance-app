@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fuelbalanceapp.R
+import org.threeten.bp.format.DateTimeFormatter
 
 class FuelPurchaseAdapter(private val fuelPurchases: MutableList<FuelPurchase>, private val context: Context) :
     RecyclerView.Adapter<FuelPurchaseViewHolder>() {
@@ -20,8 +21,11 @@ class FuelPurchaseAdapter(private val fuelPurchases: MutableList<FuelPurchase>, 
     override fun onBindViewHolder(holder: FuelPurchaseViewHolder, position: Int) {
         val fuelPurchase = fuelPurchases[position]
 
-        holder.amountTextView.text = fuelPurchase.amount
-        holder.dateTextView.text = fuelPurchase.date
+        holder.amountTextView.text = fuelPurchase.amount.toString() + " l"
+
+        // Format the LocalDate to a String.
+        val formattedDate: String = fuelPurchase.date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+        holder.dateTextView.text = formattedDate
     }
 
     override fun getItemCount(): Int {
@@ -35,7 +39,7 @@ class FuelPurchaseAdapter(private val fuelPurchases: MutableList<FuelPurchase>, 
         popupMenu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.menu_delete -> {
-                    deleteItem(position)
+                    deleteFuelPurchase(position)
                     true
                 }
                 // Add more menu items if needed.
@@ -51,7 +55,8 @@ class FuelPurchaseAdapter(private val fuelPurchases: MutableList<FuelPurchase>, 
         notifyItemInserted(0)
     }
 
-    private fun deleteItem(position: Int) {
+    private fun deleteFuelPurchase(position: Int) {
+        deleteFuelPurchaseFromDb(fuelPurchases[position].id)
         fuelPurchases.removeAt(position)
         notifyItemRemoved(position)
 
@@ -60,5 +65,9 @@ class FuelPurchaseAdapter(private val fuelPurchases: MutableList<FuelPurchase>, 
 
     private fun updateEmptyViewVisibility() {
         (context as AddFuelPurchase).updateEmptyViewVisibility()
+    }
+
+    private fun deleteFuelPurchaseFromDb(id: Long) {
+        (context as AddFuelPurchase).deleteFuelPurchaseFromDb(id)
     }
 }
