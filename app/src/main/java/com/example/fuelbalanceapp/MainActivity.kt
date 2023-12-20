@@ -17,6 +17,7 @@ import com.example.fuelbalanceapp.transitions.TRANSITIONS_RECEIVER_ACTION
 import com.example.fuelbalanceapp.transitions.TransitionsReceiver
 import com.example.fuelbalanceapp.transitions.removeActivityTransitionUpdates
 import com.example.fuelbalanceapp.transitions.requestActivityTransitionUpdates
+import com.example.fuelbalanceapp.tripshistory.ViewTripsHistory
 import kotlinx.android.synthetic.main.activity_main.*
 
 const val SHARED_PREFERENCES_FILE = "MyPrefs"
@@ -91,12 +92,15 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        buttonViewTripsHistory.setOnClickListener {
+            val intent = Intent(this@MainActivity, ViewTripsHistory::class.java)
+            startActivity(intent)
+        }
+
         buttonAddFuelPurchase.setOnClickListener {
             val intent = Intent(this@MainActivity, AddFuelPurchase::class.java)
             startActivity(intent)
         }
-
-
     }
 
     private fun resetTracking() {
