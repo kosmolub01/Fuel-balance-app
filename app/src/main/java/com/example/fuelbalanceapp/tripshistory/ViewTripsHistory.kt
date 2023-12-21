@@ -13,9 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.fuelbalanceapp.DatabaseHelper
 import com.example.fuelbalanceapp.DatabaseHelper.Companion.COLUMN_DATE
 import com.example.fuelbalanceapp.DatabaseHelper.Companion.COLUMN_DISTANCE
-import com.example.fuelbalanceapp.DatabaseHelper.Companion.COLUMN_FUEL_AMOUNT
 import com.example.fuelbalanceapp.DatabaseHelper.Companion.COLUMN_ID
-import com.example.fuelbalanceapp.DatabaseHelper.Companion.FUEL_PURCHASES_TABLE_NAME
 import com.example.fuelbalanceapp.DatabaseHelper.Companion.TRIPS_TABLE_NAME
 import com.example.fuelbalanceapp.R
 import com.jakewharton.threetenabp.AndroidThreeTen

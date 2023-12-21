@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -13,21 +14,30 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.fuelbalanceapp.detectedactivity.DetectedActivityService
 import com.example.fuelbalanceapp.fuelpurchase.AddFuelPurchase
+import com.example.fuelbalanceapp.fuelpurchase.FuelPurchase
 import com.example.fuelbalanceapp.transitions.TRANSITIONS_RECEIVER_ACTION
 import com.example.fuelbalanceapp.transitions.TransitionsReceiver
 import com.example.fuelbalanceapp.transitions.removeActivityTransitionUpdates
 import com.example.fuelbalanceapp.transitions.requestActivityTransitionUpdates
+import com.example.fuelbalanceapp.tripshistory.Trip
 import com.example.fuelbalanceapp.tripshistory.ViewTripsHistory
 import kotlinx.android.synthetic.main.activity_main.*
+import org.threeten.bp.LocalDate
+import org.threeten.bp.format.DateTimeFormatter
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 const val SHARED_PREFERENCES_FILE = "MyPrefs"
 const val TRIPS_RECORDING_KEY = "tripsRecording"
+//const val BALANCE_KEY = "balance"
 
 class MainActivity : AppCompatActivity() {
 
     private val transitionBroadcastReceiver: TransitionsReceiver = TransitionsReceiver().apply {
         action = { setDetectedActivity(it) }
     }
+
+    private lateinit var dbHelper: DatabaseHelper
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
@@ -44,6 +54,8 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        dbHelper = DatabaseHelper(this)
 
         // Load tripsRecording from SharedPreferences and set the switch accordingly, start service,
         // request activity transition updates.
@@ -87,6 +99,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Calculate the balance and update the textView.
+        //val balance: Float = sharedPreferences.getFloat(BALANCE_KEY, 0.0F)
+        textViewBalanceValue.text = calculateTheBalance().toString()
+
         buttonSetFuelConsumption.setOnClickListener {
             val intent = Intent(this@MainActivity, SetFuelConsumption::class.java)
             startActivity(intent)
@@ -119,6 +135,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         registerReceiver(transitionBroadcastReceiver, IntentFilter(TRANSITIONS_RECEIVER_ACTION))
+        textViewBalanceValue.text = calculateTheBalance().toString()
     }
 
     override fun onPause() {
@@ -178,10 +195,85 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun saveTripsRecordingToSharedPreferences(isChecked: Boolean) {
-        // Save tripsRecording to SharedPreferences
+        // Save tripsRecording to SharedPreferences.
         val sharedPreferences = this.getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
         editor.putBoolean(TRIPS_RECORDING_KEY, isChecked)
         editor.apply()
+    }
+
+    private fun calculateTheBalance() : Double{
+        var totalDistance = 0.0
+        var totalFuelAmount = 0.0
+        var usedFuel : Double
+
+        // Calculate total distance covered and amount of purchased fuel.
+        val trips = getAllTrips()
+
+        for (trip in trips) {
+            totalDistance += trip.distance
+        }
+
+        // Load fuelConsumption from SharedPreferences.
+        val sharedPreferences = this.getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE)
+        val fuelConsumption: Float = sharedPreferences.getFloat(FUEL_CONSUMPTION_KEY, 0.0F)
+
+        // Calculate used fuel.
+        usedFuel = fuelConsumption * totalDistance / 100
+
+        val fuelPurchases = getAllFuelPurchases()
+
+        for (fuelPurchase in fuelPurchases) {
+            totalFuelAmount += fuelPurchase.amount
+        }
+
+        return BigDecimal(totalFuelAmount - usedFuel).setScale(2, RoundingMode.HALF_UP).toDouble()
+    }
+
+    private fun getAllTrips(): MutableList<Trip> {
+        val trips = mutableListOf<Trip>()
+        val db = dbHelper.readableDatabase
+        val cursor: Cursor = db.rawQuery("SELECT * FROM ${DatabaseHelper.TRIPS_TABLE_NAME}", null)
+
+        while (cursor.moveToNext()) {
+            val id = cursor.getLong(cursor.getColumnIndex(DatabaseHelper.COLUMN_ID))
+            val date = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DATE))
+            val distance = cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.COLUMN_DISTANCE))
+
+            // Parse the date string into a LocalDate object.
+            val parsedDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+
+            trips.add(Trip(parsedDate, distance, id))
+        }
+        cursor.close()
+        db.close()
+
+        trips.sortByDescending { it.date }
+
+        return trips
+    }
+
+    private fun getAllFuelPurchases(): MutableList<FuelPurchase> {
+        val fuelPurchases = mutableListOf<FuelPurchase>()
+        val db = dbHelper.readableDatabase
+        val cursor: Cursor = db.rawQuery("SELECT * FROM ${DatabaseHelper.FUEL_PURCHASES_TABLE_NAME}", null)
+
+        while (cursor.moveToNext()) {
+            val id = cursor.getLong(cursor.getColumnIndex(DatabaseHelper.COLUMN_ID))
+            val date = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DATE))
+            val amount = cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.COLUMN_FUEL_AMOUNT))
+
+            // Parse the date string into a LocalDate object.
+            val parsedDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+
+            fuelPurchases.add(FuelPurchase(parsedDate, amount, id))
+        }
+
+        cursor.close()
+        db.close()
+
+        fuelPurchases.sortByDescending { it.date }
+
+        return fuelPurchases
     }
 }
