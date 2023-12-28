@@ -69,19 +69,19 @@ class DetectedActivityReceiver : BroadcastReceiver() {
                     // and if transition to or from IN_VEHICLE state is detected,
                     // then start or stop service responsible for recording a trip.
                     val sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE)
-                    val previousActivity: String? = sharedPreferences.getString(PREVIOUS_ACTIVITY_KEY, "NO_WALKING")
+                    val previousActivity: String? = sharedPreferences.getString(PREVIOUS_ACTIVITY_KEY, "NO_IN_VEHICLE")
 
                     val tripRecordingServiceIntent = Intent(context, TripRecordingService::class.java)
 
                     // NO_WALKING -> WALKING || NO_IN_VEHICLE -> IN_VEHICLE
-                    if (this[0].type == DetectedActivity.WALKING && previousActivity == "NO_WALKING") {
-                        savePreviousActivityToSharedPreferences(context, "WALKING")
+                    if (this[0].type == DetectedActivity.IN_VEHICLE && previousActivity == "NO_IN_VEHICLE") {
+                        savePreviousActivityToSharedPreferences(context, "IN_VEHICLE")
                         context.startService(tripRecordingServiceIntent)
                     }
                     // WALKING -> NO_WALKING || IN_VEHICLE -> NO_IN_VEHICLE
-                    else if (this[0].type != DetectedActivity.WALKING && previousActivity == "WALKING") {
+                    else if (this[0].type != DetectedActivity.IN_VEHICLE && previousActivity == "IN_VEHICLE") {
                         context.stopService(tripRecordingServiceIntent)
-                        savePreviousActivityToSharedPreferences(context, "NO_WALKING")
+                        savePreviousActivityToSharedPreferences(context, "NO_IN_VEHICLE")
                     }
 
                     showNotification(this[0], context)
