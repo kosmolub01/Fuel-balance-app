@@ -33,6 +33,7 @@
     <string name="type_here">Type here...</string>
     <string name="save_car_fuel_consumption">Save</string>
     <string name="add_fuel_purchase_with_current_date">Add fuel purchase with current date (l)</string>
+    <string name="add_trip_with_current_date">Add trip with current date (km)</string>
     <string name="add_fuel_purchase_to_the_list">Add</string>
 
     <string name="still">Still</string>
@@ -45,5 +46,6 @@
     <string name="running_text">Running</string>
     <string name="in_vehicle_text">In vehicle</string>
     <string name="no_fuel_purchases_available">No fuel purchases available.</string>
+    <string name="no_trips_available">No trips available.</string>
 
 </resources>

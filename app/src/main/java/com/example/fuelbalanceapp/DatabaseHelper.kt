@@ -10,7 +10,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     companion object {
         private const val DATABASE_NAME = "fuel_balance_app_database"
         private const val DATABASE_VERSION = 1
-        private const val TRIPS_TABLE_NAME = "trips_table"
+        const val TRIPS_TABLE_NAME = "trips_table"
         const val FUEL_PURCHASES_TABLE_NAME = "fuel_purchases_table"
 
         const val COLUMN_ID = "id"

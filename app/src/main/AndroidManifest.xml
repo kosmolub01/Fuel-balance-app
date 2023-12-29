@@ -35,6 +35,11 @@
             android:label="Set Fuel Consumption"
             android:parentActivityName=".MainActivity" />
         <activity
+            android:name=".tripshistory.ViewTripsHistory"
+            android:exported="false"
+            android:label="Trips History"
+            android:parentActivityName=".MainActivity"/>
+        <activity
             android:name=".fuelpurchase.AddFuelPurchase"
             android:exported="false"
             android:label="Add Fuel Purchase"

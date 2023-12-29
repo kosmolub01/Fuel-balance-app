@@ -38,13 +38,6 @@ class AddFuelPurchase : AppCompatActivity() {
         val recyclerView: RecyclerView = RecyclerViewFuelPurchases
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        /*val fuelPurchases = mutableListOf(
-            FuelPurchase(0, "2023-11-28", 10.0),
-            FuelPurchase(1, "2023-11-25", 10.0),
-            FuelPurchase(2, "2023-11-28", 10.0),
-            FuelPurchase(3, "2023-11-25", 10.0),
-        )*/
-
         val fuelPurchases = getAllFuelPurchases()
 
         fuelPurchaseAdapter = FuelPurchaseAdapter(fuelPurchases, this)
