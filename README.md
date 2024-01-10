@@ -1,5 +1,5 @@
 # Fuel-balance-app
-The app monitors consumed and purchased fuel. It is dedicated to individuals who share one car. With this app, each person will know how much fuel they have used and purchased. 
+Android app that monitors consumed and purchased fuel. It is dedicated to individuals who share one car. With this app, each person will know how much fuel they have used and purchased. 
 
 ## App in action
 https://www.youtube.com/watch?v=kk8U9iKlF7M
